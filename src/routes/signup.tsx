@@ -1,199 +1,4 @@
-// import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-// import { useState } from "react";
-// import { GraduationCap, Users, ShieldCheck, Check } from "lucide-react";
-// import { AuthShell, Field, PrimaryButton } from "@/components/auth-shell";
-// import { createUserWithEmailAndPassword } from "firebase/auth";
-// import { doc, serverTimestamp, setDoc } from "firebase/firestore";
-// import { auth, db } from "@/firebase/firebase";
 
-// export const Route = createFileRoute("/signup")({
-//   head: () => ({
-//     meta: [
-//       { title: "Create account — Smart Campus" },
-//       { name: "description", content: "Start organizing your academic life in minutes." },
-//     ],
-//   }),
-//   component: Signup,
-// });
-
-// type Role = "student" | "teacher" | "admin";
-// const roles: { id: Role; label: string; icon: any; desc: string; to: string }[] = [
-//   { id: "student", label: "Student", icon: GraduationCap, desc: "Track classes, tasks and notes.", to: "/dashboard" },
-//   { id: "teacher", label: "Teacher", icon: Users, desc: "Manage lectures and assignments.", to: "/teacher/dashboard" },
-//   { id: "admin", label: "Admin", icon: ShieldCheck, desc: "Oversee the entire institute.", to: "/admin/dashboard" },
-// ];
-
-// function Signup() { const [name, setName] = useState("");
-// const [email, setEmail] = useState("");
-// const [password, setPassword] = useState("");
-// const [course, setCourse] = useState("");
-// const [semester, setSemester] = useState("");
-// const [section, setSection] = useState("");
-// const [rollNo, setRollNo] = useState("");
-// const [department, setDepartment] = useState("");
-
-// const [loading, setLoading] = useState(false);
-
-// const [error, setError] = useState("");
-//   const [role, setRole] = useState<Role>("student");
-//   const navigate = useNavigate();
-//   const target = roles.find(r => r.id === role)!.to;
-//   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
-//     e.preventDefault();
-
-//     setError("");
-// if (role === "student" && (!section || !rollNo)) {
-//   setError("Please enter Section and Roll Number.");
-//   return;
-// }
-//     try {
-//       setLoading(true);
-
-//       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-
-//       await setDoc(doc(db, "users", userCredential.user.uid), {
-//         uid: userCredential.user.uid,
-//         name,
-//         email,
-//         role,
-        
-
-//         course: role === "student" ? course : "",
-//         semester: role === "student" ? semester : "",
-//         section: role === "student" ? section : "",
-//         rollNo: role === "student" ? rollNo : "",
-
-//         department: role === "teacher" ? department : "",
-
-//         createdAt: serverTimestamp(),
-//       });
-
-//       navigate({
-//         to: target,
-//       });
-//     } catch (err: any) {
-//       setError(err.message);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-//   return (
-//     <AuthShell
-//       title="Create your account"
-//       subtitle="Pick your role to get a workspace built for you."
-//       footer={
-//         <>
-//           Already have an account?{" "}
-//           <Link to="/login" className="font-medium text-primary hover:underline">
-//             Sign in
-//           </Link>
-//         </>
-//       }
-//     >
-//       <div className="mb-5 grid grid-cols-3 gap-2">
-//         {roles.map((r) => {
-//           const Icon = r.icon;
-//           const active = role === r.id;
-//           return (
-//             <button
-//               key={r.id}
-//               type="button"
-//               onClick={() => setRole(r.id)}
-//               className={`group relative overflow-hidden rounded-xl border p-3 text-left transition-all duration-300 ${
-//                 active
-//                   ? "border-primary bg-primary-soft shadow-[0_0_0_4px_var(--primary-soft)]"
-//                   : "border-border bg-card hover:-translate-y-0.5 hover:border-foreground/30 hover:shadow-soft"
-//               }`}
-//             >
-//               {active && (
-//                 <span
-//                   aria-hidden
-//                   className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/10 to-transparent"
-//                 />
-//               )}
-//               <div
-//                 className={`grid h-8 w-8 place-items-center rounded-lg transition ${active ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground group-hover:text-foreground"}`}
-//               >
-//                 <Icon className="h-4 w-4" />
-//               </div>
-//               <p className="mt-2 text-sm font-medium">{r.label}</p>
-//               <p className="mt-0.5 text-[10px] leading-tight text-muted-foreground">{r.desc}</p>
-//               {active && <Check className="absolute right-2 top-2 h-3.5 w-3.5 text-primary" />}
-//             </button>
-//           );
-//         })}
-//       </div>
-//       <form className="space-y-4" onSubmit={handleSignup}>
-//         <Field
-//           label="Full name"
-//           placeholder="Aarav Sharma"
-//           value={name}
-//           onChange={(e) => setName(e.target.value)}
-//         />
-//         <Field
-//           label="Email"
-//           type="email"
-//           placeholder="you@college.edu"
-//           value={email}
-//           onChange={(e) => setEmail(e.target.value)}
-//         />
-//         <Field
-//           label="Password"
-//           type="password"
-//           placeholder="At least 8 characters"
-//           hint="Use a passphrase you can remember."
-//           value={password}
-//           onChange={(e) => setPassword(e.target.value)}
-//         />
-//         {role === "student" && (
-//           <>
-//             <Field
-//               label="Course"
-//               placeholder="B.Tech CSE"
-//               value={course}
-//               onChange={(e) => setCourse(e.target.value)}
-//             />
-
-//             <Field
-//               label="Semester"
-//               placeholder="5"
-//               value={semester}
-//               onChange={(e) => setSemester(e.target.value)}
-//             />
-
-//             <Field
-//               label="Section"
-//               placeholder="A"
-//               value={section}
-//               onChange={(e) => setSection(e.target.value)}
-//             />
-//             <Field
-//               label="Roll Number"
-//               placeholder="CS21B001"
-//               value={rollNo}
-//               onChange={(e) => setRollNo(e.target.value)}
-//             />
-//           </>
-//         )}
-//         {role === "teacher" && (
-//           <Field
-//             label="Department"
-//             placeholder="Computer Science"
-//             value={department}
-//             onChange={(e) => setDepartment(e.target.value)}
-//           />
-//         )}
-//         {error && <p className="text-sm text-red-500">{error}</p>}
-//         <PrimaryButton type="submit" disabled={loading}>
-//           {loading ? "Creating..." : `Create ${roles.find((r) => r.id === role)!.label} account`}
-//         </PrimaryButton>
-//         <p className="text-center text-xs text-muted-foreground">
-//           By continuing you agree to our terms.
-//         </p>
-//       </form>
-//     </AuthShell>
-//   );
-// }
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { GraduationCap, Users, ShieldCheck, Check, Lock } from "lucide-react";
@@ -447,7 +252,7 @@ function Signup() {
           if (existing.exists()) {
             throw new Error("ROLL_TAKEN");
           }
-          tx.set(rollRef, { uid: createdUid, claimedAt: serverTimestamp() });
+          tx.set(rollRef, { uid: createdUid, claimedAt: new Date() });
         });
       }
 
@@ -472,28 +277,49 @@ function Signup() {
       }
 
       navigate({ to: target });
-    } catch (err: any) {
-      // Roll back the Auth account if anything after it failed, so we don't
-      // leave an orphaned login with no profile behind.
-      if (createdUid) {
-        try {
-          await auth.currentUser?.delete();
-        } catch {
-          // best-effort cleanup; nothing more we can do client-side here
-        }
-      }
-      if (err?.message === "ROLL_TAKEN") {
-        setError(
-          "That roll number was just taken by someone else. Please double-check it and try again.",
-        );
-      } else {
-        setError(err.message ?? "Something went wrong. Please try again.");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  //   } catch (err: any) {
+  //     // Roll back the Auth account if anything after it failed, so we don't
+  //     // leave an orphaned login with no profile behind.
+  //     if (createdUid) {
+  //       try {
+  //         await auth.currentUser?.delete();
+  //       } catch {
+  //         // best-effort cleanup; nothing more we can do client-side here
+  //       }
+  //     }
+  //     if (err?.message === "ROLL_TAKEN") {
+  //       setError(
+  //         "That roll number was just taken by someone else. Please double-check it and try again.",
+  //       );
+  //     } else {
+  //       setError(err.message ?? "Something went wrong. Please try again.");
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+} catch (err: any) {
+  console.error("SIGNUP ERROR:", err);
+  console.error("Error code:", err.code);
+  console.error("Error message:", err.message);
 
+  alert(`${err.code}\n${err.message}`);
+
+  if (createdUid) {
+    try {
+      await auth.currentUser?.delete();
+    } catch {}
+  }
+
+  if (err?.message === "ROLL_TAKEN") {
+    setError(
+      "That roll number was just taken by someone else. Please double-check it and try again.",
+    );
+  } else {
+    setError(err.message ?? "Something went wrong. Please try again.");
+  }
+}
+  };
   return (
     <AuthShell
       title="Create your account"
